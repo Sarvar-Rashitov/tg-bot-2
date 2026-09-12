@@ -48,11 +48,16 @@ async def get_text(update: Update, context: ContextTypes.DEFAULT_TYPE):
 
 
 async def get_photo(update: Update, context: ContextTypes.DEFAULT_TYPE):
-
     photo = update.message.photo[-1]
-    username = update.effective_user.username
 
     photo_id = photo.file_id
+    print(photo_id)
+
+    username = update.effective_user.username
+    user_id = update.effective_user.id
+
+    if username is None:
+        username = user_id
 
     file = await context.bot.get_file(photo_id)
 
@@ -61,6 +66,67 @@ async def get_photo(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await file.download_to_drive(filename)
 
     await update.message.reply_photo(photo_id)
+
+
+
+async def get_video(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    video = update.message.video
+
+    video_id = video.file_id
+    print(video_id)
+
+    username = update.effective_user.username
+    user_id = update.effective_user.id
+
+    if username is None:
+        username = user_id
+
+    file = await context.bot.get_file(video_id)
+
+    filename = f"videos/{username}.mp4"
+
+    await file.download_to_drive(filename)
+
+    await update.message.reply_video(video_id)
+
+
+
+async def get_audio(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    audio = update.message.audio
+
+    audio_id = audio.file_id
+
+    name = audio.file_name
+
+    file = await context.bot.get_file(audio_id)
+
+    filename = f"audios/{name}"
+
+    await file.download_to_drive(filename)
+
+    await update.message.reply_audio(audio_id)
+
+
+
+async def get_voice(update: Update, context: ContextTypes.DEFAULT_TYPE):
+    voice = update.message.voice
+
+    voice_id = voice.file_id
+    print(voice_id)
+
+    username = update.effective_user.username
+    user_id = update.effective_user.id
+
+    if username is None:
+        username = user_id
+
+    file = await context.bot.get_file(voice_id)
+
+    filename = f"voices/{username}.mp3"
+
+    await file.download_to_drive(filename)
+
+    await update.message.reply_voice(voice_id)
 
 
 # telegram severi bilan bog'lanadigan qism
@@ -74,6 +140,10 @@ app.add_handler(CommandHandler("help", get_help))
 
 app.add_handler(MessageHandler(filters.TEXT, get_text))
 app.add_handler(MessageHandler(filters.PHOTO, get_photo))
+app.add_handler(MessageHandler(filters.VIDEO, get_video))
+app.add_handler(MessageHandler(filters.AUDIO, get_audio))
+app.add_handler(MessageHandler(filters.VOICE, get_voice))
+
 
 print("Bot ish tushdi...")
 app.run_polling()
